@@ -1,126 +1,199 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora</title>
+<title>Posto Paraíso - Calculadora</title>
 
-    <!-- Manifest para virar PWA -->
-    <link rel="manifest" href="manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#003366">
 
-    <style>
-        body {
-            background: #111;
-            font-family: Arial;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: white;
-        }
-        .calc {
-            width: 320px;
-            background: #222;
-            padding: 20px;
-            border-radius: 15px;
-        }
-        .display {
-            height: 60px;
-            background: black;
-            font-size: 32px;
-            text-align: right;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-        .buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-        button {
-            padding: 20px;
-            font-size: 20px;
-            border: none;
-            border-radius: 10px;
-            background: #444;
-            color: white;
-        }
-        button:active {
-            background: #666;
-        }
-        .op {
-            background: #ff9500;
-        }
-        .op:active {
-            background: #cc7a00;
-        }
-    </style>
+<style>
+    :root {
+        --verde: #006b36;
+        --amarelo: #ffd100;
+        --cinza: #f1f1f1;
+        --texto: #333333;
+        --logo: #eead2d;
+        --azul-escuro: #003366;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background: var(--logo);
+        padding: 0;
+        margin: 0;
+    }
+
+    header {
+        background: var(--azul-escuro);
+        color: white;
+        text-align: center;
+        padding: 18px;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    h3 { 
+        color: var(--verde); 
+        margin-top: 15px; 
+        font-size: 16px;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        margin-top: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: 0.2s;
+    }
+
+    .selecionado {
+        border: 3px solid #000;
+        filter: brightness(1.15);
+    }
+
+    .produto { background: var(--amarelo); color: var(--texto); }
+    .pix { background: var(--verde); color: white; }
+    .debito { background: #1f7bb6; color: white; }
+
+    #resultado {
+        margin-top: 15px;
+        padding: 14px;
+        background: var(--cinza);
+        border-radius: 8px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        margin-top: 8px;
+        border-radius: 8px;
+        border: 1px solid #111;
+    }
+
+    .botao-calculadora {
+        position: fixed;
+        bottom: 15px;
+        right: 15px;
+        background: var(--verde);
+        color: white;
+        padding: 12px 18px;
+        font-size: 16px;
+        border-radius: 50px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        z-index: 1000;
+    }
+</style>
 </head>
+
 <body>
 
-<div class="calc">
-    <div id="display" class="display">0</div>
+<header>⚽ POSTO PARAÍSO ⚽</header>
 
-    <div class="buttons">
-        <button onclick="clearDisplay()">C</button>
-        <button onclick="del()">DEL</button>
-        <button onclick="add('%')">%</button>
-        <button class="op" onclick="add('/')">÷</button>
+<div id="calculadora" class="container">
 
-        <button onclick="add('7')">7</button>
-        <button onclick="add('8')">8</button>
-        <button onclick="add('9')">9</button>
-        <button class="op" onclick="add('*')">×</button>
+    <h3>Produto</h3>
+    <button id="gasolina" class="produto" onclick="selecionarProduto('gasolina')">Gasolina Comum</button>
+    <button id="aditivada" class="produto" onclick="selecionarProduto('aditivada')">Gasolina Aditivada</button>
+    <button id="diesel" class="produto" onclick="selecionarProduto('diesel')">Diesel Comum/S10</button>
+    <button id="alcool" class="produto" onclick="selecionarProduto('alcool')">Álcool</button>
 
-        <button onclick="add('4')">4</button>
-        <button onclick="add('5')">5</button>
-        <button onclick="add('6')">6</button>
-        <button class="op" onclick="add('-')">−</button>
+    <h3>Forma de Pagamento</h3>
+    <button id="pix" class="pix" onclick="selecionarPagamento('pix')">Pix</button>
+    <button id="debito" class="debito" onclick="selecionarPagamento('debito')">Débito</button>
 
-        <button onclick="add('1')">1</button>
-        <button onclick="add('2')">2</button>
-        <button onclick="add('3')">3</button>
-        <button class="op" onclick="add('+')">+</button>
+    <h3>Calcular por Litros</h3>
+    <input type="number" id="litros" placeholder="Digite os litros" oninput="calcular()">
 
-        <button onclick="add('0')" style="grid-column: span 2;">0</button>
-        <button onclick="add('.')">.</button>
-        <button class="op" onclick="calculate()">=</button>
-    </div>
+    <h3>Calcular por Dinheiro</h3>
+    <input type="number" id="dinheiro" placeholder="Digite o valor em R$" oninput="calcular()">
+
+    <div id="resultado">Total: R$ 0,00</div>
 </div>
 
+<button class="botao-calculadora" onclick="window.location.href='https://rg2tvfree.blogspot.com/p/calculadora-rg.html?m=1'">
+    Calculadora
+</button>
+
 <script>
-    const display = document.getElementById("display");
+    let produto = null;
+    let pagamento = null;
 
-    function add(n) {
-        if (display.innerText === "0") display.innerText = "";
-        display.innerText += n;
+    const precos = {
+        gasolina: { pix: 6.39, debito: 6.59 },
+        aditivada: { pix: 6.49, debito: 6.69 },
+        diesel:   { pix: 5.75, debito: 5.99 },
+        alcool:   { pix: 4.90, debito: 4.90 }
+    };
+
+    function selecionarProduto(tipo) {
+        produto = tipo;
+
+        document.querySelectorAll(".produto").forEach(btn => btn.classList.remove("selecionado"));
+        document.getElementById(tipo).classList.add("selecionado");
+
+        calcular();
     }
 
-    function clearDisplay() {
-        display.innerText = "0";
+    function selecionarPagamento(tipo) {
+        pagamento = tipo;
+
+        document.querySelectorAll(".pix, .debito").forEach(btn => btn.classList.remove("selecionado"));
+        document.getElementById(tipo).classList.add("selecionado");
+
+        calcular();
     }
 
-    function del() {
-        if (display.innerText.length > 1) {
-            display.innerText = display.innerText.slice(0, -1);
-        } else {
-            display.innerText = "0";
+    function calcular() {
+        const litros = parseFloat(document.getElementById("litros").value);
+        const dinheiro = parseFloat(document.getElementById("dinheiro").value);
+
+        if (!produto || !pagamento) {
+            document.getElementById("resultado").innerHTML = "Selecione produto e pagamento";
+            return;
         }
-    }
 
-    function calculate() {
-        try {
-            display.innerText = eval(display.innerText);
-        } catch {
-            display.innerText = "Erro";
+        const preco = precos[produto][pagamento];
+        const nomeProduto = 
+            produto === "gasolina" ? "Gasolina Comum" :
+            produto === "aditivada" ? "Gasolina Aditivada" :
+            produto === "diesel" ? "Diesel S10" : 
+            "Álcool";
+
+        const nomePagamento = pagamento === "pix" ? "Pix" : "Débito";
+
+        if (!isNaN(litros) && litros > 0) {
+            const total = litros * preco;
+            document.getElementById("resultado").innerHTML =
+                `${nomeProduto} (${nomePagamento})<br><br>
+                Total: <strong>R$ ${total.toFixed(2)}</strong>`;
+            return;
         }
+
+        if (!isNaN(dinheiro) && dinheiro > 0) {
+            const litrosResult = dinheiro / preco;
+            document.getElementById("resultado").innerHTML =
+                `${nomeProduto} (${nomePagamento})<br><br>
+                Litros: <strong>${litrosResult.toFixed(2)} L</strong>`;
+            return;
+        }
+
+        document.getElementById("resultado").innerHTML = "Total: R$ 0,00";
     }
 
-    // Ativa PWA
+    // ATIVANDO PWA
     if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("service-worker.js");
+        navigator.serviceWorker.register("sw.js");
     }
 </script>
 
