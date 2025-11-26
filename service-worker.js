@@ -1,6 +1,6 @@
-self.addEventListener("install", e => {
-    e.waitUntil(
-        caches.open("calc-cache").then(cache => {
+self.addEventListener("install", event => {
+    event.waitUntil(
+        caches.open("posto-cache").then(cache => {
             return cache.addAll([
                 "index.html",
                 "manifest.json"
@@ -9,8 +9,10 @@ self.addEventListener("install", e => {
     );
 });
 
-self.addEventListener("fetch", e => {
-    e.respondWith(
-        caches.match(e.request).then(resp => resp || fetch(e.request))
+self.addEventListener("fetch", event => {
+    event.respondWith(
+        caches.match(event.request).then(response => {
+            return response || fetch(event.request);
+        })
     );
 });
